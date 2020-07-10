@@ -9,7 +9,7 @@ from fpdf import FPDF
 import datetime
 import os
 
-####### variable definitions #####
+
 
 # global variables 
 payrollFileInput = "payrollFile.txt"
@@ -19,11 +19,11 @@ tdcOutputsData = []
 uscOutputsData = []
 destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
 
-# input data of payment from admin - to implement
+# input date of payment from administrator 
 print("Provide data of payment in following format: Year, Month, Day")
 dateOfPayment = input();
 
-# data validation
+# date validation
 isDateValid = bool(False)
 
 def validateDataInput(date):
@@ -54,7 +54,7 @@ while not isDateValid:
 # 2010,66 #debug
 
 # week number extraction
-res = tuple(map(int, dateOfPayment.split(','))) 
+#res = tuple(map(int, dateOfPayment.split(','))) 
 
 #weekNum = datetime.date(arg,arg,arg).isocalendar()[1]
 weekNum = datetime.date(tuple(map(int, dateOfPayment.split(',')))[0],tuple(map(int, dateOfPayment.split(',')))[1],tuple(map(int, dateOfPayment.split(',')))[2]).isocalendar()[1]
@@ -70,18 +70,20 @@ def valideteEmployee(empPay):
     
     employeeName =  firstName + " " + secondName
 
-    print(type(employeeName)) #debug
-    print((employeeName))  #debug
+    #print(type(employeeName)) #debug
+    #print((employeeName))  #debug
 
     
     if employeeName in os.listdir('EmploeePayslips/'):    
         if str(weekNum)+'.pdf' in os.listdir("EmploeePayslips/" + employeeName):
             #destination = os.getcwd() + "\\EmploeePayslips\\"+ employeeName       
             os.startfile(destination + employeeName+"\\" + str(weekNum)+".pdf")
-            print(destination)
+            #print(destination)
+            print("This period was already processed")
         else:
             print("No Payslip for this week ", str(weekNum) ) 
-            print(destination)
+            print("Creating file...")
+            #print(destination)
             
             ''' here comes create payslip code'''
             #dateOfPayslipCreation = datetime.datetime.now()    
@@ -91,32 +93,49 @@ def valideteEmployee(empPay):
             Period = str(weekNum)
             PRSIClass = empPay[5]
             WeeklyTaxCredit = empPay[10]            
-            GrossPay = empPay[14]
+            GrossPay = empPay[14] 
+            
+            col1 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+        
             
             
             
-            col1 = ["Date                         " + Date,
-                    "PPS Number             " + PPSNumber,
-                    "Period                       " + str(Period),
-                    "PRSIClass                " + PRSIClass,
-                    "Weekly Tax Credit   " + str(WeeklyTaxCredit),                    
-                    "Total Pay                  " + str(GrossPay)]
+            col2 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+            
+            col3 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+        
+        
         
 
             pdf = payslipPDF('P','mm', (200,120))
             pdf.alias_nb_pages()
             pdf.add_page()
-            pdf.set_font('Times', '', 12)
+            pdf.set_font('Times', '', 8)
             
         
             for i in (col1):    
                 pdf.cell(0, 6, ' ' , 0, 1)
-                pdf.cell(7)
+                pdf.cell(5)
                 pdf.cell(0, 0, i, 0, 1)
-                pdf.cell(70)
-                pdf.cell(0, 0, 'Printing line col2 ' , 0, 1)
-                pdf.cell(120)
-                pdf.cell(0, 0, 'Printing line col3 ' , 0, 1)
+                pdf.cell(65)
+                pdf.cell(0, 0, i , 0, 1)
+                pdf.cell(130)
+                pdf.cell(0, 0, i , 0, 1)
             pdf.output(destination + employeeName+"\\" + str(weekNum) + '.pdf', "F")
             
 
@@ -130,14 +149,14 @@ def valideteEmployee(empPay):
 # class for Pdf payslip template
 class payslipPDF(FPDF):
     def header(self):
-        self.set_font('Arial', 'BU', 15)
+        self.set_font('Arial', 'BU', 12)
         self.cell(0, 10, 'Payslip for ' + firstName + " " + secondName, 0, 0, 'C')
         self.ln(20)
 
     # Page footer
     def footer(self):
         self.set_y(-15)
-        self.set_font('Arial', 'I', 8)
+        self.set_font('Arial', 'I', 6)
         self.cell(0, 10, 'Johnny Consulting Services Ltd  ( Er. No. 9237821S  ) ', 0, 0, 'C')    
 
 
@@ -187,10 +206,6 @@ for employee in payrollData:
     middleName  =  employee[3] 
     dataOfBirth = employee[4]
 
-    
-   
-    
-    
     
     # payroll data for calculation 
     annualSalary = float(employee[5])
@@ -338,11 +353,11 @@ print()
 print()    
 # debugging   
 for d in payslipsOutputsData:
-    print(f"payslip: {d} ")  
+    #print(f"payslip: {d} ")  
     #print(f"teraz sprawdz employee TDC card: payslipOutputs record from all_records {d} ")
     #print(f"teraz sprawdz employee USC card: payslipOutputs record from all_records {d} ")
-    print()  
-    #pass
+    #print()  
+    pass
 
 
 
