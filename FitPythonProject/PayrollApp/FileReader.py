@@ -56,7 +56,7 @@ while not isDateValid:
 # week number extraction
 res = tuple(map(int, dateOfPayment.split(','))) 
 
-#weekNum = datetime.date(res[0],res[1],res[2]).isocalendar()[1]
+#weekNum = datetime.date(arg,arg,arg).isocalendar()[1]
 weekNum = datetime.date(tuple(map(int, dateOfPayment.split(',')))[0],tuple(map(int, dateOfPayment.split(',')))[1],tuple(map(int, dateOfPayment.split(',')))[2]).isocalendar()[1]
 
 #print(res) #debug
