@@ -10,6 +10,9 @@ import datetime
 import os
 
 
+## *************************************************************************************************************************************
+## **************************      Process 1 Data extraction and validation   ****************************************************************************  
+## *************************************************************************************************************************************
 
 
 
@@ -18,13 +21,23 @@ import os
 
 # external payroll file with employee data 
 payrollFileInput = "payrollFile1.txt"
+
+
 uscDataFileInpute = "uscData1.txt"
+
+
+
+
+
+
+
+
 
 # set of data from payroll file
 payrollKeys = ["pps", "fname", "sname", "mname", "dob", "al_salary","al_srcop","al_paye_credits","al_pension_percent","prsi_class","cum_gp_to_date","cum_srcop",
                  "cum_lwr_paye","cum_higher_paye","cum_tax_credits","email","cumulative_usc","cum_gross_tax","cum_tax_due"]
 payrollValuesData = []
-payrollKeyData = [] # check if nessesary
+payrollKeyData = [] 
 payrollValuesDataDict = {}
 payrollDataFile = []
 payrollOutputsData = []
@@ -38,16 +51,16 @@ uscKeys = ["pps", "fname", "sname", "mname", "dob",
            "cumulative_usc","date_of_payment","usc_ded_this_period", "usc_ref_this_period", 
            "gp_for_usc_this_period", "cum_gp_for_usc_to_date", "cum_usc_cut_off_point_1", "cum_usc_due_at_usc_rate_1", "cum_usc_cut_off_point_2",
            "cum_usc_due_at_usc_rate_2", "cum_usc_cut_off_point_3", "cum_usc_due_at_usc_rate_3", "cum_usc_due_at_usc_rate_4"]
-
-
 uscValuesData = []
 uscKeyData = []
 uscValuesDataDict = {}
 uscDataFile = []
-usclOutputsData = []
 
 
-uscsValuesDataDict = {}
+#usclOutputsData = []
+
+
+#uscsValuesDataDict = {}
 uscCards = []
 
 
@@ -99,8 +112,8 @@ if payrollFileInput in os.listdir():
                 payrollValuesData.append(data)          
             payrollKeyData.append(payrollKeys)
             #print(payrollValuesData)
-        #print(ppsCheck)
-        #print(payrollValuesData)
+        print(payrollKeys)
+        print(payrollKeyData)
         ppsCheck = set()
         for k,v in zip(payrollKeyData, payrollValuesData):            
             for i in range(19):
@@ -121,7 +134,7 @@ for pd in payrollDataFile:
 print("---------------------------------------")
 
 
-
+#  extracting data from USC file
 
 if uscDataFileInpute in os.listdir():
     #if exists open and  read file into the list
@@ -157,6 +170,21 @@ else:
 
 
 
+
+
+
+## *************************************************************************************************************************************
+## **************************      Process 2 Calculations   ****************************************************************************  
+## *************************************************************************************************************************************
+
+
+
+
+
+
+
+
+
 # data preparation
 
 # personalData
@@ -185,7 +213,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     
     payslipsValuesDataDict.update(personalData)    
     tdcValuesDataDict.update(personalData)
-    uscsValuesDataDict.update(personalData)    
+    uscValuesDataDict.update(personalData)    
     payrollValuesDataDict.update(personalData)
     payrollValuesDataDict.pop("prsi_class")
     payrollValuesDataDict["al_salary"] = (pd["al_salary"])
@@ -345,9 +373,9 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     tdcValuesDataDict = {}  
     
     
-    uscsValuesDataDict.update(uscMonthlyCalculations)
-    uscsValuesDataDict.update(uscCumulativeCalculations)
-    uscCards.append(uscsValuesDataDict)
+    uscValuesDataDict.update(uscMonthlyCalculations)
+    uscValuesDataDict.update(uscCumulativeCalculations)
+    uscCards.append(uscValuesDataDict)
     uscsValuesDataDict = {}
         
     payrollValuesDataDict["prsi_class"] = (pd["prsi_class"])
@@ -406,21 +434,13 @@ for pr in payrollOutputsData:
 
 
 
+## *************************************************************************************************************************************
+## **************************      Process 3 Document creation    ****************************************************************************  
+## *************************************************************************************************************************************
 
 
 
 
-
-
-
-# cumulative data
-
-cumulativeData = {"cum_gp_to_date":"", "cum_srcop":"", "cum_lwr_paye":"", "cum_higher_paye":"", "cumulative_usc":"", "cum_tax_credits":"", "cum_gross_tax":"", "cum_tax_due":""}
-
-
-# cumulative USC data
-
-cumulativeUSCData = {"gp_for_usc_this_period":"", "cum_gp_for_usc_to_date":"", "cum_usc_cut_off_point_1":"", "cum_usc_due_at_usc_rate_1":"", "cum_usc_cut_off_point_2":"", "cum_usc_due_at_usc_rate_2":"", "cum_usc_cut_off_point_3":"", "cum_usc_due_at_usc_rate_3":""}
 
 
 

@@ -12,26 +12,35 @@ import os
 
 
 # global variables 
-payrollFileInput = "payrollFile.txt"
+payrollFileInput = "payrollFile1.txt"
 payrollData = []
 payslipsOutputsData = []
 tdcOutputsData = []
 uscOutputsData = []
 destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
 
+
+
+
+
+
+
+
 # input date of payment from administrator 
 print("Provide data of payment in following format: Year, Month, Day")
 dateOfPayment = input();
+monthOfpayment = ""
 
 # date validation
 isDateValid = bool(False)
 
 def validateDataInput(date):
-    print("to jest data ", date)
+    print("to jest data ", date) # debug
     global isDateValid    
     try:
         datetime.datetime.strptime(date, '%Y,%m,%d')
-        isDateValid = bool(True)
+        isDateValid = bool(True)       
+        
         #print("test ", isDateValid) #debug
        
     except ValueError:
@@ -48,8 +57,11 @@ while not isDateValid:
     dateOfPayment = input();
     validateDataInput(dateOfPayment)
     #print(isDateValid) #debug
-    
 
+
+
+    
+'''
 # 2010,6,16 #debug
 # 2010,66 #debug
 
@@ -63,6 +75,17 @@ weekNum = datetime.date(tuple(map(int, dateOfPayment.split(',')))[0],tuple(map(i
 #print(type(res))
 #datetime.date(2010,6,16).isocalendar()[1] #debug
 print(weekNum) #debug
+'''
+
+
+
+
+d = datetime.datetime.strptime(dateOfPayment, "%Y,%m,%d")
+monthOfpayment = d.month
+print(monthOfpayment)
+
+
+'''
 
 
 # validate employee method and create file structure
@@ -85,7 +108,7 @@ def valideteEmployee(empPay):
             print("Creating file...")
             #print(destination)
             
-            ''' here comes create payslip code'''
+            # here comes create payslip code#
             #dateOfPayslipCreation = datetime.datetime.now()    
         
             Date = dateOfPayment
@@ -179,8 +202,27 @@ if payrollFileInput in os.listdir():
             payrollData.append(data)
             #print(type(data)) #debug
             #print(f"debug: empFile record from all_records {i} ")  
+
+
 else:
     print("Payroll data is missing")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 # debugging   
 #for d in payrollData:
@@ -365,7 +407,7 @@ for d in payslipsOutputsData:
 
 
 
-
+'''
 
 
 
