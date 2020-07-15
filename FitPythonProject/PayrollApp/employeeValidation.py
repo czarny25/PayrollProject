@@ -1,75 +1,51 @@
 '''
-Created on 7 Jul 2020
+Created on 14 Jul 2020
 
 @author: Marty
 '''
 
-
 from fpdf import FPDF
 import datetime
+import calendar
 import os
 
 
-## *************************************************************************************************************************************
-## **************************      Process 1 Data extraction and validation   ****************************************************************************  
-## *************************************************************************************************************************************
 
+# global variables 
 
-
-
-# global variables
-
-# external payroll file with employee data 
-payrollFileInput = "payrollFile1.txt"
-uscDataFileInpute = "uscData1.txt"
-
-
-
-
-
-
-
-
-
-# set of data from payroll file
+# set of data structures for payroll file processing 
 payrollKeys = ["pps", "fname", "sname", "mname", "dob", "al_salary","al_srcop","al_paye_credits","al_pension_percent","prsi_class","cum_gp_to_date","cum_srcop",
                  "cum_lwr_paye","cum_higher_paye","cum_tax_credits","email","cumulative_usc","cum_gross_tax","cum_tax_due"]
-payrollValuesData = []
-payrollKeyData = [] 
-payrollValuesDataDict = {}
-payrollDataFile = []
-payrollOutputsData = []
 
+# list that holds an array of the values for each employee extracted from payroll file
+payrollValuesData = []
+# list that holds keys for values extracted
+payrollKeyData = [] 
+# dictionary that will hold key and values for one employee
+payrollValuesDataDict = {}
+# list of dictionaries with employees data
+payrollDataFile = []
+# list with updated values for payroll file 
+payrollOutputsData = []
+# set used to validate file against duplicates
 ppsCheck = set()
 
 
-
-# set of data for USC card creation
+# set of data structures for payslip file processing
 uscKeys = ["pps", "fname", "sname", "mname", "dob",
            "cumulative_usc","date_of_payment","usc_ded_this_period", "usc_ref_this_period", 
            "gp_for_usc_this_period", "cum_gp_for_usc_to_date", "cum_usc_cut_off_point_1", "cum_usc_due_at_usc_rate_1", "cum_usc_cut_off_point_2",
            "cum_usc_due_at_usc_rate_2", "cum_usc_cut_off_point_3", "cum_usc_due_at_usc_rate_3", "cum_usc_due_at_usc_rate_4"]
+# list that holds an array of the usc card values for each employee extracted from usc card file
 uscValuesData = []
+# list that holds keys for values extracted
 uscKeyData = []
+# dictionary that will hold key and values for one employee
 uscValuesDataDict = {}
+# list of dictionaries with employees data
 uscDataFile = []
-
-
-#usclOutputsData = []
-
-
-#uscsValuesDataDict = {}
+# list with updated values for usc card file 
 uscCards = []
-
-
-
-
-
-
-
-
-
-
 
 
 # set of data for Payslip creation
@@ -91,10 +67,78 @@ tdcValuesDataDict = {}
 tdcCards = []
 
 
+# file path for application and files used for processing
+destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
+payrollFileInput = "payrollFile1.txt"
+uscDataFileInpute = "uscData.txt"
+
+
+# input date of payment from administrator 
+print("Provide data of payment in following format: Year, Month, Day")
+dateOfPayment = input();
+monthOfpayment = ""
 
 
 
-## Process 1 -- extracting data from payroll file and processing for further calculations
+# date validation for correct format -------------------------------------------------------------
+isDateValid = bool(False)
+
+def validateDataInput(date, isDateV):
+    print("This is your date ", date) # debug       
+    try:
+        datetime.datetime.strptime(date, '%Y/%m/%d')
+        isDateV = bool(True)
+    except ValueError:
+        print("Incorrect data format, should be YYYY/MM/DD")
+        print("Please try again ")
+    return isDateV
+
+isDateValid = validateDataInput(dateOfPayment, isDateValid)
+print(isDateValid)
+
+while not isDateValid:   
+    dateOfPayment = input();
+    isDateValid = validateDataInput(dateOfPayment, isDateValid)  
+
+
+
+
+# month number is extracted from data 
+d = datetime.datetime.strptime(dateOfPayment, '%Y/%m/%d')
+monthOfpayment = d.month
+monthName = calendar.month_name[monthOfpayment]
+print(monthName)
+
+
+
+# number of working weeks for given month is calculated
+# set array for weeks in the 
+
+
+# exact data of payment is calculated 
+# according to specification payment must occur on 10th of each month or on the next working day
+
+
+
+
+
+
+
+# 2010/6/16 #debug
+# 2010,66 #debug
+
+# end of data validation -------------------------------------------------------
+
+print(" now extraction ")
+
+
+#####################################
+# Process 1 -- data extraction module 
+#####################################
+
+
+
+## extracting data from payroll file and processing for further calculations
 # check if file exists 
 if payrollFileInput in os.listdir():
     #if exists open and  read file into the list
@@ -110,8 +154,8 @@ if payrollFileInput in os.listdir():
                 payrollValuesData.append(data)          
             payrollKeyData.append(payrollKeys)
             #print(payrollValuesData)
-        print(payrollKeys)
-        print(payrollKeyData)
+        #print(payrollKeys)
+        #print(payrollKeyData)
         ppsCheck = set()
         for k,v in zip(payrollKeyData, payrollValuesData):            
             for i in range(19):
@@ -119,11 +163,9 @@ if payrollFileInput in os.listdir():
             payrollDataFile.append(payrollValuesDataDict)
             #print(payrollValuesDataDict)
             payrollValuesDataDict = {}
+    print("Payroll data processed")
 else:
     print("Payroll data is missing")
-
-
-#payrollOutputsData = payrollDataFile
 
 
 #debug
@@ -162,18 +204,9 @@ else:
 
 
 # debug
-#for pc in uscDataFile: 
-    #print((pc))
-#print()
-
-
-
-
-
-
-## *************************************************************************************************************************************
-## **************************      Process 2 Calculations   ****************************************************************************  
-## *************************************************************************************************************************************
+for pc in uscDataFile: 
+    print((pc))
+print()
 
 
 
@@ -183,9 +216,16 @@ else:
 
 
 
-# data preparation
 
-# personalData
+###############################
+#  Process 2 -- calculation module
+###############################
+
+
+
+#def calculateAllValues():
+
+print(" in caluclation ")
 
 personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"", "prsi_class":""}
 monthlyCalculations = {"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"", "mo_salary":"", "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
@@ -195,7 +235,7 @@ uscCumulativeCalculations = {"gp_for_usc_this_period":"", "cum_gp_for_usc_to_dat
 
 
 for pd,us in zip(payrollDataFile, uscDataFile):                
-    print(pd)   
+    #print(pd)   
     for key in personalData:
         #print(key)
         if key in pd:
@@ -368,68 +408,145 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     uscValuesDataDict.update(uscMonthlyCalculations)
     uscValuesDataDict.update(uscCumulativeCalculations)
     uscCards.append(uscValuesDataDict)
-    uscsValuesDataDict = {}
+    uscValuesDataDict = {}
         
     payrollValuesDataDict["prsi_class"] = (pd["prsi_class"])
     payrollValuesDataDict.update(cumulativeCalculations)
     
     
-    # debug
-    print()
-    print(payrollValuesDataDict)
-    print()
-    print()
-    print()
-    
-    
     payrollOutputsData.append(payrollValuesDataDict)
     payrollValuesDataDict = {}
 
+
+
+#calculateAllValues()
+
+
+###########################################################################
+######### --- end of calculation ------------------------------------------
+###########################################################################
+
+
+
+
+
+
+print(" now payslip creation ")
+
+
+
+
+#empName = " "
+
+# class for Pdf payslip template ---------------------------------------------------------------------
+class payslipPDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'BU', 12)
+
+    # Page footer
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 6)
+        self.cell(0, 10, 'Johnny Consulting Services Ltd  ( Er. No. 9237821S  ) ', 0, 0, 'C')     
+
+
+
+
+# this function create payslip -------------------------------------------------------------------------
+def createPayslip(empName, month):
     
+    pdf = payslipPDF('P','mm', (200,120))    
+    pdf.alias_nb_pages()
+    pdf.add_page()
+    pdf.cell(0, 10, 'Payslip for ' + empName, 0, 0, 'C')
+    pdf.set_font('Times', '', 8)
+    pdf.output(destination + empName+"\\Payslips\\" + str(month) + '.pdf', "F")
 
-# debug
+    
+    '''
+    # here we are creating payslip content from payslip dictionary
+    #Date = dateOfPayment
+    PPSNumber =empPay[0]
+    Period = str(weekNum)
+    PRSIClass = empPay[5]
+            WeeklyTaxCredit = empPay[10]            
+            GrossPay = empPay[14] 
+            
+            col1 = ["Date                                   " + dateOfPayment,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+        
+            
+            
+            
+            col2 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+            
+            col3 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+    
+    '''
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# ------------------------------------------------------------------------------------------------------
 
-print("Payslip data -------------------------------------------------")
-for ps in payslips: 
-    for k in ps:        
-        print("{:30s} {:6s} ".format(k,ps[k])) 
-    print() 
+# function for validating employees and creating file structure for them
+def valideteEmployee(monthN, empName):
+    
+    #employeeName =  firstName + " " + secondName
+
+    #print(type(employeeName)) #debug
+    print((empName) + " " + monthN )  #debug
+    
+    if empName in os.listdir('EmploeePayslips/'):    
+        if str(monthN) +'.pdf' in os.listdir("EmploeePayslips/" + empName + "/Payslips"):
+            #destination = os.getcwd() + "\\EmploeePayslips\\"+ employeeName       
+            os.startfile(destination + empName+"\\Payslips\\" + str(monthName)+".pdf")
+            #print(destination)
+            print("This month was already processed")
+        else:
+            print("No Payslip for this mopnth ", str(monthN) ) 
+            print("Creating files...")
+            #print(destination)
+                        
+            
+            
+            
+            
+            createPayslip(empName, monthN)
+            
+           
+            
+    else:
+        print(("New employee " + empName))
+        
+        # file structure for new employee is created
+        os.mkdir(destination + empName+"\\")       
+        os.mkdir(destination + empName+"\\Payslips")     
+        open(destination + empName+"\\TDCcard.txt","w+")    
+        open(destination + empName+"\\UCDcard.txt","w+")
 
 
-print("tdc card data -------------------------------------------------")
-for ps in tdcCards: 
-    for k in ps:        
-        print("{:30s} {:6s} ".format(k,ps[k])) 
-    print() 
-
-print("usc data -------------------------------------------------")
-for ps in uscCards: 
-    for k in ps:        
-        print("{:30s} {:6s} ".format(k,ps[k])) 
-    print()   
- 
-   
-   
-print("payrollOutputsData --------------------------------------")     
-for pr in payrollOutputsData: 
-    for k in pr: 
-        #txt = "{:30s} {price:.2f} dollars!"  
-       # print(str(txt.format(k, pr[k])))     
-        print("{:30s} {:6s} ".format(k,pr[k])) 
-    print()   
-
-#txt = "For only {price:.2f} dollars!"
-#print(txt.format(k, pr[k]))
-
-#print("{:6s} {:6d} ".format(k,pr[k])) 
-
-
-
-
-## *************************************************************************************************************************************
-## **************************      Process 3 Document creation    ****************************************************************************  
-## *************************************************************************************************************************************
-
+        createPayslip(empName, monthN)
 
 
 
@@ -442,23 +559,57 @@ for pr in payrollOutputsData:
 
 
 
+# main process 
+'''
+for pd,pl,tc,uc in payrollDataFile,payslips,tdcCards,uscCards:
+    #pass
+    #employeeName =  pd["fname"] + " " + pd["sname"]
+    #print(employeeName)
+    
+    
+    # validation function is called
+    #valideteEmployee(monthName, employeeName)            
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    print(pd)       
+    print(pl)         
+    print(tc)  
+    print(uc)         
+           
+'''            
+            
+print(" ------ Payroll file -------")           
+for pd in payrollDataFile:    
+    print(pd)       
+             
+            
+print(" ------ Payslip file -------")             
+for pl in payslips: 
+    print(pl)         
+print(" ------ tcd card file -------")               
+for tc in tdcCards:           
+    print(tc)             
+print(" ------ usc card file -------")             
+for uc in uscCards:           
+    print(uc)             
+            
+print(" ------ Payroll output card file -------")             
+for pr in payrollOutputsData:           
+    print(pr)            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            

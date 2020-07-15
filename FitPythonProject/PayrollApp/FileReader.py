@@ -61,7 +61,7 @@ while not isDateValid:
 
 
     
-'''
+
 # 2010,6,16 #debug
 # 2010,66 #debug
 
@@ -75,7 +75,7 @@ weekNum = datetime.date(tuple(map(int, dateOfPayment.split(',')))[0],tuple(map(i
 #print(type(res))
 #datetime.date(2010,6,16).isocalendar()[1] #debug
 print(weekNum) #debug
-'''
+
 
 
 
@@ -84,29 +84,31 @@ d = datetime.datetime.strptime(dateOfPayment, "%Y,%m,%d")
 monthOfpayment = d.month
 print(monthOfpayment)
 
-
-'''
+firstName = ""
+secondName = ""
 
 
 # validate employee method and create file structure
 def valideteEmployee(empPay):
     
-    employeeName =  firstName + " " + secondName
+    employeeName =  ""#firstName + " " + secondName
 
     #print(type(employeeName)) #debug
     #print((employeeName))  #debug
 
     
     if employeeName in os.listdir('EmploeePayslips/'):    
-        if str(weekNum)+'.pdf' in os.listdir("EmploeePayslips/" + employeeName):
+        if str(monthOfpayment)+'.pdf' in os.listdir("EmploeePayslips/" + employeeName):
             #destination = os.getcwd() + "\\EmploeePayslips\\"+ employeeName       
-            os.startfile(destination + employeeName+"\\" + str(weekNum)+".pdf")
+            os.startfile(destination + employeeName+"\\" + str(monthOfpayment)+".pdf")
             #print(destination)
             print("This period was already processed")
         else:
-            print("No Payslip for this week ", str(weekNum) ) 
+            print("No Payslip for this week ", str(monthOfpayment) ) 
             print("Creating file...")
             #print(destination)
+            
+            
             
             # here comes create payslip code#
             #dateOfPayslipCreation = datetime.datetime.now()    
@@ -159,15 +161,16 @@ def valideteEmployee(empPay):
                 pdf.cell(0, 0, i , 0, 1)
                 pdf.cell(130)
                 pdf.cell(0, 0, i , 0, 1)
+            
             pdf.output(destination + employeeName+"\\" + str(weekNum) + '.pdf', "F")
             
 
     else:
         print((employeeName + " not present"))
-        os.mkdir(destination + employeeName+"\\")
+        '''os.mkdir(destination + employeeName+"\\")
 
 
-
+'''
 
 # class for Pdf payslip template
 class payslipPDF(FPDF):
