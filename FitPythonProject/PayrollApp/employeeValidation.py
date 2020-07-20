@@ -466,7 +466,7 @@ def createPayslip(empName, month):
     '''
     # here we are creating payslip content from payslip dictionary
     #Date = dateOfPayment
-    PPSNumber =empPay[0]
+    PPSNumber =  empPay[0]
     Period = str(weekNum)
     PRSIClass = empPay[5]
             WeeklyTaxCredit = empPay[10]            
@@ -496,10 +496,10 @@ def createPayslip(empName, month):
                     "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
                     "Total Pay                           " + str(GrossPay)]
     
+    
+    
+    
     '''
-    
-    
-    
     
     
     
@@ -584,7 +584,10 @@ for pd in payrollDataFile:
             
 print(" ------ Payslip file -------")             
 for pl in payslips: 
-    print(pl)         
+    print(pl) 
+    #createPayslip(empName, monthN)
+            
+            
 print(" ------ tcd card file -------")               
 for tc in tdcCards:           
     print(tc)             
@@ -596,7 +599,7 @@ print(" ------ Payroll output card file -------")
 for pr in payrollOutputsData:           
     print(pr)            
             
-            
+           
             
             
             
