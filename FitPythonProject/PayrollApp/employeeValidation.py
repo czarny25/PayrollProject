@@ -480,7 +480,11 @@ def createPayslip(empName, month, payslip):
     '''
     # here we are creating payslip content from payslip dictionary
     #Date = dateOfPayment
+<<<<<<< HEAD
     PPSNumber =payslip[0]
+=======
+    PPSNumber =  empPay[0]
+>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
     Period = str(weekNum)
     PRSIClass = empPay[5]
             WeeklyTaxCredit = empPay[10]            
@@ -509,6 +513,13 @@ def createPayslip(empName, month, payslip):
                     "PRSIClass                         " + PRSIClass,
                     "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
                     "Total Pay                           " + str(GrossPay)]
+<<<<<<< HEAD
+=======
+    
+    
+    
+    
+>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
     '''
     
     
@@ -517,9 +528,6 @@ def createPayslip(empName, month, payslip):
 #def updatePayrollFile(empName, month, payrollOutput):    
    # for k in payrollOutput:
        # print(k , "      ", payrollOutput[k])
-    
-    
-    
     
     
 # ------------------------------------------------------------------------------------------------------
@@ -616,7 +624,36 @@ for emp in payrollOutputsData:
 employeePayrollDate.close()
 
             
+<<<<<<< HEAD
  # 2010/6/16           
+=======
+print(" ------ Payroll file -------")           
+for pd in payrollDataFile:    
+    print(pd)       
+             
+            
+print(" ------ Payslip file -------")             
+for pl in payslips: 
+    print(pl) 
+    #createPayslip(empName, monthN)
+            
+            
+print(" ------ tcd card file -------")               
+for tc in tdcCards:           
+    print(tc)             
+print(" ------ usc card file -------")             
+for uc in uscCards:           
+    print(uc)             
+            
+print(" ------ Payroll output card file -------")             
+for pr in payrollOutputsData:           
+    print(pr)            
+            
+           
+            
+            
+            
+>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
             
             
             
