@@ -624,9 +624,9 @@ for emp in payrollOutputsData:
 employeePayrollDate.close()
 
             
-<<<<<<< HEAD
+#<<<<<<< HEAD
  # 2010/6/16           
-=======
+#=======
 print(" ------ Payroll file -------")           
 for pd in payrollDataFile:    
     print(pd)       
@@ -653,7 +653,7 @@ for pr in payrollOutputsData:
             
             
             
->>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
+#>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
             
             
             
