@@ -48,14 +48,14 @@ uscDataFile = []
 # list with updated values for usc card file 
 uscCards = []
 
-'''
+
 # set of data for Payslip creation
 payslipsKeys = ["pps", "fname", "sname", "mname", "dob", 
                 "prsi_class","cum_gp_to_date","cum_srcop","cum_lwr_paye","cum_higher_paye","cum_tax_credits","cumulative_usc","cum_gross_tax","cum_tax_due"
                 "al_salary","al_srcop","al_paye_credits","al_pension_percent","prsi_class",
                 "cum_gp_to_date","cum_srcop","cum_lwr_paye","cum_higher_paye","cum_tax_credits","email","cumulative_usc","cum_gross_tax","cum_tax_due"]
 
-'''
+
 payslipsValuesDataDict = {}
 payslips = []
 
@@ -72,7 +72,7 @@ tdcCards = []
 
 # file path for application and files used for processing
 destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
-payrollFileInput = "payrollFile2.txt"
+payrollFileInput = "payrollFile1.txt"
 uscDataFileInpute = "uscData.txt"
 
 
@@ -239,8 +239,8 @@ else:
 
 print(" in caluclation ")
 
-personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"", "prsi_class":""}
-monthlyCalculations = {"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"",  "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
+personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"","email":"", "prsi_class":""}
+monthlyCalculations = {"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"", "mo_salary":"", "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
 uscMonthlyCalculations = { "date_of_payment":""}
 cumulativeCalculations = {"cum_gp_to_date":"", "cum_srcop":"", "cum_lwr_paye":"", "cum_higher_paye":"", "cumulative_usc":"", "cum_tax_credits":"", "cum_gross_tax":"", "cum_tax_due":""}
 uscCumulativeCalculations = {"gp_for_usc_this_period":"", "cum_gp_for_usc_to_date":"", "cum_usc_cut_off_point_1":"", "cum_usc_due_at_usc_rate_1":"", "cum_usc_cut_off_point_2":"", "cum_usc_due_at_usc_rate_2":"", "cum_usc_cut_off_point_3":"", "cum_usc_due_at_usc_rate_3":"", "cum_usc_due_at_usc_rate_4":""}         
@@ -280,34 +280,33 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     
     monthlyCalculations["mo_gross_pay_less_super"] = "%.2f" %(monthlySalaryLessPension)
     monthlyCalculations["date_of_payment"] = "10/34/1656"
-    monthlyCalculations["prsi_ins_weeks"] = "%.2f" %(5)    
+    monthlyCalculations["prsi_ins_weeks"] = "%.2f" %(5)
+    monthlyCalculations["mo_salary"] = "%.2f" %(monthlySalary)
     uscMonthlyCalculations["date_of_payment"] = "10/34/1656"
     
         
     annualScrop = float(pd["al_srcop"])
-    annualTaxCredit = float(pd["al_paye_credits"])
-    monthlyTaxCredit = annualTaxCredit/12
+    monthlyTaxCredit = annualScrop/12
     totalMonthlyPayeTax = 0
     
     if annualScrop > annualSalary:
         
         monthlyScrop = annualSalary/12
         twentyPercent = (monthlyScrop) * 0.2
-        fortyPercent = (monthlySalaryLessPension - monthlyScrop) * 0.4
+        fortyPercent = (monthlySalaryLessPension - monthlyTaxCredit) * 0.4
         if fortyPercent <= 0: fortyPercent = 0
         
-        totalMonthlyPayeTax = (twentyPercent + fortyPercent) - monthlyTaxCredit        
+        totalMonthlyPayeTax = twentyPercent + fortyPercent - monthlyTaxCredit/12
+        
         if totalMonthlyPayeTax <= 0: totalMonthlyPayeTax = 0
         
     else:
         monthlyScrop = annualScrop/12
         twentyPercent = (monthlyScrop) * 0.2
-        fortyPercent = (monthlySalaryLessPension - monthlyScrop) * 0.4
+        fortyPercent = (monthlySalaryLessPension -monthlyTaxCredit) * 0.4
         
         totalMonthlyPayeTax = twentyPercent + fortyPercent - monthlyTaxCredit
         
-    print(totalMonthlyPayeTax)
-
     # PRSI calculation   
  
     prsiEE = monthlySalary * 0.04    
@@ -324,14 +323,14 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     # USC calculation 
     if annualSalary < 12012: pass
     if annualSalary > 12012: uscRate1 = (12012/12) * 0.005
-    if annualSalary < 20484 and annualSalary >= 12012: uscRate2 = ((8472 - (20484 - annualSalary))/12) * 0.02 
-    if annualSalary >= 20484 : uscRate2 = (8472 / 12) * 0.02  
-    if annualSalary < 70044 and annualSalary >= 20484: uscRate3 = ((monthlySalaryLessPension - (19873.992 /12)) * 0.045 ) 
-    if annualSalary > 70044 : uscRate3 = (49560.01 / 12) * 0.045  
+    if annualSalary < 19874 and annualSalary >= 12012: uscRate2 = ((7862 - (19874 - annualSalary))/12) * 0.02 
+    if annualSalary >= 19874 : uscRate2 = (7862 / 12) * 0.02  
+    if annualSalary < 70044 and annualSalary >= 19874: uscRate3 = ((49560 - (70044 - annualSalary))/12) * 0.045  
+    if annualSalary > 70044 : uscRate3 = (49560 / 12) * 0.045  
     if annualSalary >= (70044): uscRate4 = (annualSalary/12) * 0.08
         
-    totalMonthlyUSC = uscRate1 + uscRate2 + uscRate3 + uscRate4    
-    print(uscRate1, "  " , uscRate2, "  " ,  uscRate3 , "  " ,  uscRate4)
+    totalMonthlyUSC = uscRate4 + uscRate2 + uscRate3 + uscRate4    
+    
     
     monthlyCalculations["usc_ded_this_period"] = "%.2f" %(totalMonthlyUSC)
     uscMonthlyCalculations["usc_ded_this_period"] = "%.2f" %(totalMonthlyUSC)
@@ -343,8 +342,8 @@ for pd,us in zip(payrollDataFile, uscDataFile):
         monthlyCalculations["usc_ref_this_period"] = "%.2f" %(totalMonthlyUSC) 
         uscMonthlyCalculations["usc_ref_this_period"] = "%.2f" %(totalMonthlyUSC)
     
-    totalDedactions = totalMonthlyPayeTax +  prsiEE  + totalMonthlyUSC 
-    print(totalDedactions)
+    totalDedactions = pension + totalMonthlyPayeTax +  prsiEE  + totalMonthlyUSC 
+    #print(type(totalDedactions))
     
     netMonthlySalary = monthlySalaryLessPension - totalDedactions    
     monthlyCalculations["mo_net_pay"] = "%.2f" %(netMonthlySalary)
@@ -373,7 +372,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     cumulativeCalculations["cum_gross_tax"] = "%.2f" %(cum_gross_tax + totalDedactions) # wyjasinic co znaczy gross tax
     
     cum_tax_due = float(pd["cum_tax_due"]) 
-    cumulativeCalculations["cum_tax_due"] = "%.2f" %(cum_tax_due + totalMonthlyPayeTax)
+    cumulativeCalculations["cum_tax_due"] = "%.2f" %(cum_tax_due + totalDedactions)
     
     
     uscMonthlyCalculations["cumulative_usc"] = "%.2f" %(cumulative_usc + totalMonthlyUSC)   
@@ -470,57 +469,61 @@ class payslipPDF(FPDF):
 # this function create payslip -------------------------------------------------------------------------
 def createPayslip(empName, month, payslip):
     
-         
-    col1 = ['{:60s} {:12s}'.format("PPS Number", payslip['pps']),
-            '{:67s} {:12s}'.format("Date", dateOfPayment),
-            '{:66s} {:12s}'.format("Gross Salary", payslip['mo_gross_pay_less_super']),
-            '{:60s} {:12s}'.format("", ""),
-            '{:60s} {:12s}'.format("", ""),
-            '{:60s} {:12s}'.format("", ""),
-            '{:67s} {:12s}'.format("Net Pay", payslip['mo_net_pay']),
-            '{:60s} {:12s}'.format("YTD Gross Pay", payslip['cum_gp_to_date']),
-            '{:65s} {:12s}'.format("SCROP", payslip['cum_srcop']),
-            '{:60s} {:12s}'.format("Gross Tax Due", payslip['cum_gross_tax']),
-            '{:66s} {:12s}'.format("Tax Credits", payslip['cum_tax_credits']),
-            '{:60s} {:12s}'.format("", "")]
-          
-    col2 = ['{:60s} {:12s}'.format("DOB", payslip['dob']),
-            '{:60s} {:12s}'.format("", ""),
-            '{:66s} {:12s}'.format("Pension", payslip['mo_gross_pay_less_super']),
-            '{:68s} {:12s}'.format("Paye", payslip['mo_gross_pay_less_super']),
-            '{:60s} {:12s}'.format("", ""),
-            '{:60s} {:12s}'.format("", ""),
-            '{:67s} {:12s}'.format("Net Pay", payslip['mo_net_pay']),
-            '{:60s} {:12s}'.format("YTD Gross Pay", payslip['cum_gp_to_date']),
-            '{:65s} {:12s}'.format("SCROP", payslip['cum_srcop']),
-            '{:61s} {:12s}'.format("Gross Tax Due", payslip['cum_gross_tax']),
-            '{:68s} {:12s}'.format("Class", payslip['prsi_class']),
-            '{:60s} {:12s}'.format("USC Deducted", payslip['usc_ded_this_period'])]  
-          
-    
     pdf = payslipPDF('P','mm', (200,120))    
     pdf.alias_nb_pages()
     pdf.add_page()
     pdf.cell(0, 10, 'Payslip for ' + empName, 0, 0, 'C')
     pdf.set_font('Times', '', 8)
-    pdf.ln(10)
-    pdf.line(10, 22, 180, 22)
-    pdf.line(10, 35, 180, 35)
-    pdf.line(10, 65, 180, 65)
-    pdf.line(10, 95, 180, 95)
-    
-    
-    for i in range( len(col1)):    
-                
-                pdf.cell(1, 6, ' ' , 0, 1)
-                pdf.cell(5)
-                pdf.cell(0, 0, col1[i], 0, 1)
-                pdf.cell(100)
-                pdf.cell(0, 0, col2[i] , 0, 1)
-                             
-    
     pdf.output(destination + empName+"\\Payslips\\" + str(month) + '.pdf', "F")
+
+    #print(payslip)
+    #for k in payslip:
+        #print(k , payslip[k])
     
+    '''
+    # here we are creating payslip content from payslip dictionary
+    #Date = dateOfPayment
+<<<<<<< HEAD
+    PPSNumber =payslip[0]
+=======
+    PPSNumber =  empPay[0]
+>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
+    Period = str(weekNum)
+    PRSIClass = empPay[5]
+            WeeklyTaxCredit = empPay[10]            
+            GrossPay = empPay[14] 
+            
+            col1 = ["Date                                   " + dateOfPayment,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+        
+            
+            
+            
+            col2 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+            
+            col3 = ["Date                                   " + Date,
+                    "PPS Number                      " + PPSNumber,
+                    "Period                                " + str(Period),
+                    "PRSIClass                         " + PRSIClass,
+                    "Weekly Tax Credit            " + str(WeeklyTaxCredit),                    
+                    "Total Pay                           " + str(GrossPay)]
+<<<<<<< HEAD
+=======
+    
+    
+    
+    
+>>>>>>> branch 'master' of https://github.com/czarny25/PayrollProject.git
+    '''
     
     
     
@@ -532,8 +535,6 @@ def createPayslip(empName, month, payslip):
     
 # ------------------------------------------------------------------------------------------------------
 
-
-
 # function for validating employees and creating file structure for them
 def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
     
@@ -542,7 +543,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
     #print(type(employeeName)) #debug
     #print((empName) + " from validate " + monthN )  #debug
         
-    print(payslip)       
+    #print(payslip)       
     #print(ucdCard)         
     #print(tdcCard)  
     #print(payrollOutputsData) 
@@ -563,7 +564,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
             
             
             print()
-            createPayslip(empName, monthN, payslip)
+            #createPayslip(empName, monthN, payslip)
             #updatePayrollFile(empName, monthN, payrollOutput)
            
             
@@ -577,7 +578,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
         open(destination + empName+"\\UCDcard.txt","w+")
 
 
-        createPayslip(empName, monthN, payslip)
+        #createPayslip(empName, monthN, payslip)
         #updatePayrollFile(empName, monthN, payrollOutput)
     
 
@@ -594,7 +595,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
 
 for num in range(len(payrollDataFile)):
     
-    employeeName =  payrollDataFile[num]["fname"]+ " " + payrollDataFile[num]["mname"] + " " + payrollDataFile[num]["sname"]
+    employeeName =  payrollDataFile[num]["fname"] + " " + payrollDataFile[num]["sname"]
     #print(payrollOutputsData[num])    
         
     
@@ -603,7 +604,7 @@ for num in range(len(payrollDataFile)):
     
          
            
-'''
+
 
 # update payroll file
     
@@ -625,16 +626,14 @@ for emp in payrollOutputsData:
     employeeRecord = ""
 employeePayrollDate.close()
 
-            
+'''            
 #<<<<<<< HEAD
  # 2010/6/16           
 #=======
-
-
 print(" ------ Payroll file -------")           
 for pd in payrollDataFile:    
     print(pd)       
-          
+             
             
 print(" ------ Payslip file -------")             
 for pl in payslips: 
