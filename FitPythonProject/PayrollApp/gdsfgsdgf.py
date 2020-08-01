@@ -24,8 +24,17 @@ employeeTDCRecord = employeeTDCRecord + "---------------------------------------
           
 length = 2
 string = "23"
-# print("|","%*s" % (2, string),"|")
+
+#print("|","%*s" % (10,string),"|")
          
 
 
-print(employeeTDCRecord)
+#print(employeeTDCRecord)
+
+print('{:2s} {:2s}  {:2s}'.format('|', '24rt35e326', '|'))
+print('{:s} {:10s}  {:s}'.format('|', '22344326', '|'))
+print('{:s} {:10s}  {:s}'.format('|', '245326', '|'))('{:s} {:10s}  {:s}'.format('|', '24326', '|'))
+
+#print('{:10s} {:3s}  {:7s}'.format('xxx', 'xxx4343', '34534534545235'))
+#print('{:10s} {:3s}  {:7s}'.format('xxx', 'xxrtex4343', '34545'))
+

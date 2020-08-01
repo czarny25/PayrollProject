@@ -540,47 +540,48 @@ def createPayslip(empName, month, payslip):
     
     
     
-# this function create tdc Card -------------------------------------------------------------------------    
+# this function create tdc Card for new year or new employee 
 def createTDCCardFile(empName, month, tdcCard, tdcCardFile):    
-    
-    print( "this is tdc card   ", tdcCard)
-    
-   
-    period = (tdcCard['date_of_payment'])[3:5]
-    print("to jest moj period ", period)
-    
+       
     employeeTDCRecord = " Tax Deduction Card \n ------------------ \n Employee Name         " + empName + "                                      Total Tax Credit " + tdcCard['al_paye_credits'] +    "                       Initial PRSI Class " + tdcCard['prsi_class'] + "\n\n" 
     employeeTDCRecord = employeeTDCRecord + " PPS Number            " + tdcCard['pps'] +    "                                        Total Cut-Off Point " + tdcCard['al_paye_credits'] + "  \n\n          "
     employeeTDCRecord = employeeTDCRecord + "                                                             Tax Rate 1 20%        Tax Rate 2 40%  \n\n  "
     employeeTDCRecord = employeeTDCRecord + "                                                                     Tax Year "  + tdcCard['taxYear'] + " \n\n"          
     employeeTDCRecord = employeeTDCRecord + " Employer Name         "  + tdcCard['employerName'] + "                  Employer Number "  + tdcCard['employerNumber'] + "  \n\n"  
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-    employeeTDCRecord = employeeTDCRecord + "Month | Date of Payment  | Gross Pay this period  | Cumulative Gross Pay to Date | Cumulative Cut-Off Point | Cumulative Tax Due at Tax Rate 1 | Cumulative Tax Due at Tax Rate 2 | Cumulative Gross Tax | Cumulative Tax Credit Monthly | Cumulative Tax | Tax Deducted this Period | Tax Refunded this period | USC Deducted this Period | USC Refunded this Period | PRSI Employer Share | PRSI Employee Share | Total PRSI | Net Pay |\n" 
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-    employeeTDCRecord = employeeTDCRecord + ""+"%*s   " % (3, str(monthOfpayment)) + "|   " + tdcCard['date_of_payment'] + "     |        " + tdcCard['mo_gross_pay_less_super'] + "         |           " + tdcCard['cum_gp_to_date'] + "            |        " + tdcCard['cumulative_Cut-Off_Point'] + "          |               " + tdcCard['cum_lwr_paye'] + "             |              " + tdcCard['cum_higher_paye'] + "              |        " + tdcCard['cum_gross_tax'] + "       |              " + tdcCard['cum_tax_credits'] + "           |     " + tdcCard['cum_tax_due'] + "     |           " + tdcCard['total_tax_this_period_deducted'] + "         |           " + tdcCard['total_tax_this_period_refund'] + "           |            " + tdcCard['usc_ded_this_period'] + "        |           " + tdcCard['usc_ref_this_period'] + "           |        " + tdcCard['prsi_er'] + "       |        " + tdcCard['prsi_ee'] + "       |   " + tdcCard['total_PRSI'] + "   | " +  tdcCard['mo_net_pay'] + " |\n" 
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-        
-    # '{:3s} {:3}'.format(str(monthOfpayment)),
-    # str(monthOfpayment)
-    # "%*s" % (2, str(monthOfpayment)
+    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+    employeeTDCRecord = employeeTDCRecord + "      |  Date of |   Gross  | Cumulative | Cumulative | Cumulative | Cumulative |Cumulative|Cumulative|Cumulative|Tax Deducted|Tax Refunded|USC Deducted|USC Refunded|  PRSI  | PRSI   | Total  |   Net    |\n" 
+    employeeTDCRecord = employeeTDCRecord + " Month|  Payment | Pay this | Gross Pay  |   Cut-Off  | Tax Due at | Tax Due at |  Gross   |Tax Credit|    Tax   |this Period | this period| this Period| this Period|Employer|Employee|  PRSI  |   Pay    |\n" 
+    employeeTDCRecord = employeeTDCRecord + "      |  Payment |  period  |  to Date   |    Point   | Tax Rate 1 | Tax Rate 2 |   Tax    |  Monthly |          |            |            |            |            |  Share |  Share |        |          |\n"
+    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
     
-    print(employeeTDCRecord)
-    #tdcCardFile.write(employeeTDCRecord)
+    employeeTDCRecord = employeeTDCRecord + ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(tdcCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(tdcCard['mo_gross_pay_less_super'],'|')) #+ 
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['cum_gp_to_date'],'|')) + (' {:11s}{:s}'.format(tdcCard['cumulative_Cut-Off_Point'],'|'))  + (' {:11s}{:s}'.format(tdcCard['cum_lwr_paye'],'|')) + (' {:11s}{:s}'.format(tdcCard['cum_higher_paye'],'|')) 
+    employeeTDCRecord = employeeTDCRecord + (' {:9s}{:s}'.format(tdcCard['cum_gross_tax'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_credits'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_due'],'|')) + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_deducted'],'|')) 
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_er'],'|'))  
+    employeeTDCRecord = employeeTDCRecord + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
+    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+
+    # tdc card is written to file
+    tdcCardFile.write(employeeTDCRecord)
+    tdcCardFile.close()
+    # record cleared
+    employeeTDCRecord = ""
 
     
-# ------------------------------------------------------------------------------------------------------
+# This function is for updating already existing tdc cards 
 def updateTDCCardFile(empName, month, tdcCard): 
-    
-    print( "this is tdc card   ", tdcCard)
-    
-    employeeTDCRecord = "" + "  | " + " | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  | " + "  |" + "  | " + " I | " + "  |\n" 
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-       
-    print(employeeTDCRecord)
-    
+        
+    employeeTDCRecord =  ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(tdcCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(tdcCard['mo_gross_pay_less_super'],'|')) #+ 
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['cum_gp_to_date'],'|')) + (' {:11s}{:s}'.format(tdcCard['cumulative_Cut-Off_Point'],'|'))  + (' {:11s}{:s}'.format(tdcCard['cum_lwr_paye'],'|')) + (' {:11s}{:s}'.format(tdcCard['cum_higher_paye'],'|')) 
+    employeeTDCRecord = employeeTDCRecord + (' {:9s}{:s}'.format(tdcCard['cum_gross_tax'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_credits'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_due'],'|')) + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_deducted'],'|')) 
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_er'],'|'))  
+    employeeTDCRecord = employeeTDCRecord + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
+    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+
+     
     tdcCardFile = open(destination + empName+"\\TDCcard.txt","a") 
     tdcCardFile.write(employeeTDCRecord)
-
+    tdcCardFile.close()
 
 
 
@@ -598,8 +599,8 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
             
             print()
             #createPayslip(empName, monthN, payslip)
-            #updateTDCCardFile(empName, monthN, tdcCard)
-           
+            updateTDCCardFile(empName, monthN, tdcCard)
+            #updateUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
             
     else:
         print(("New employee " + empName))
@@ -608,15 +609,12 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
         os.mkdir(destination + empName+"\\")       
         os.mkdir(destination + empName+"\\Payslips")     
         tdcCardFile = open(destination + empName+"\\TDCcard.txt","w")    
-        #tdcCardFile.write(employeeRecord)
-        
-        
         open(destination + empName+"\\UCDcard.txt","w+")
 
 
         #createPayslip(empName, monthN, payslip)
         createTDCCardFile(empName, monthN, tdcCard, tdcCardFile)
-    
+        #createUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
 
 
 
