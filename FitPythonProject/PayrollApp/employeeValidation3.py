@@ -598,7 +598,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
         else:
             
             print()
-            #createPayslip(empName, monthN, payslip)
+            createPayslip(empName, monthN, payslip)
             updateTDCCardFile(empName, monthN, tdcCard)
             #updateUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
             
