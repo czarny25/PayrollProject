@@ -71,7 +71,7 @@ tdcCards = []
 
 
 # file path for application and files used for processing
-destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
+destination = os.getcwd() + "\\EmploeePayslips\\"  
 payrollFileInput = "payrollFile1.txt"
 uscDataFileInpute = "uscData.txt"
 
@@ -83,29 +83,19 @@ print("Welcome \nThis is Automated Payroll Application ")
 
 
 
-
 # -------------- user data input validation -------------------------------------------------------
 
 # input date of payment from administrator 
 print("Provide data of payment in following format: Year, Month, Day")
 inputDateOfPayment = input();
-monthOfpayment = ""
 
-# debug data
-#2008-45-12
-#125-12-12
-#2589-12-45
-# 2021-3-2
-# 2020-8-2
-# 2020-9-2
-# 2020-3-2
-#1998-2-23
 
-# date validation for correct format -------------------------------------------------------------
+
+#------------- date validation for correct format -------------------------------------------------------------
 isDateValid = False
 
 def validateDataInput(date, isDateV):
-    print("This is your date ", date) # debug       
+    #print("This is your date ", date) # debug       
     try:
         datetime.datetime.strptime(date, '%Y-%m-%d')
         isDateV = bool(True)
@@ -121,7 +111,45 @@ while not isDateValid:
     isDateValid = validateDataInput(inputDateOfPayment, isDateValid)  
 
 
-# month number is extracted from data 
+
+#--------- past date validation -----------------
+
+isPastDate = False
+
+def pastDateCheck(date, isPD):
+    if (datetime.date.today()) < (datetime.datetime.strptime(date, '%Y-%m-%d').date()):
+        isPD = True
+        print("This is not valid date\nPayroll can only be processed for future date in current tax year ")
+        
+    return isPD
+
+isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
+
+
+#-------- tax year validation --------------------
+isCurrentTaxYear = False
+
+def currentTaxYearCheck(date, isYearV):
+    if (datetime.date.today()).year == (datetime.datetime.strptime(date, '%Y-%m-%d')).year:
+        isYearV = True
+        print("This is not valid date\nPayroll can only be processed for future date in current tax year ")
+    return isYearV
+
+isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
+
+while not (isCurrentTaxYear and isPastDate and  isDateValid):          
+    isDateValid = False
+    isPastDate = False
+    isCurrentTaxYear = False    
+    inputDateOfPayment = input();
+    
+    isDateValid = validateDataInput(inputDateOfPayment, isDateValid)             
+    if isDateValid:
+        isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
+        isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
+           
+
+#------- month number is extracted from data 
 d = datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')
 paydate = datetime.date(d.year,d.month,d.day)
 
@@ -131,65 +159,8 @@ monthName = calendar.month_name[monthOfpayment]
 
 
 
-#--------- past date validation -----------------
 
-isPastDate = False
-
-def pastDateCheck(date, isPD):
-    if (datetime.date.today()) < (datetime.datetime.strptime(date, '%Y-%m-%d').date()):
-        isPD = True
-        print("this is not past date")
-    return isPD
-
-isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
-'''
-while not isPastDate:
-    print("This is past date. Payroll can only be processed for future date")   
-    inputDateOfPayment = input();
-    isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
-
-print(isPastDate)
-'''
-
-#-------- tax year validation --------------------
-
-isCurrentTaxYear = False
-
-def currentTaxYearCheck(date, isYearV):
-    if (datetime.date.today()).year == (datetime.datetime.strptime(date, '%Y-%m-%d')).year:
-        isYearV = True
-        #print(  (datetime.date.today()).year, " and "(datetime.datetime.strptime(date, '%Y-%m-%d')).year)
-        print("this is current year")
-    return isYearV
-
-isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
-
-'''
-while not isCurrentTaxYear:
-    print("This is not current tax year. Payroll can only be processed for current tax year")   
-    inputDateOfPayment = input();
-    isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
-
-
-print((datetime.date.today()).year == (datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')).year)
-'''
-
-while not (isCurrentTaxYear and isPastDate):
-    print("This is not current tax year. Make sure Payroll can only be processed for current tax year")   
-    inputDateOfPayment = input();
-    isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
-    isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
-
-print((datetime.date.today()).year == (datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')).year)
-
-
-print(isCurrentTaxYear)
-
-
-
-
-
-# Function for check if day is not bank holiday
+#-------- Function for check if day is not bank holiday
 def isBankHolidayFunc(date):   
     for d in Ireland().holidays(date.year):
         if d[0] == date: return True           
@@ -223,38 +194,16 @@ week_count_per_month = {1:5, 2:9, 3:13, 4:18, 5:22, 6:26, 7:31, 8:35, 9:39, 10:4
 prsi_ins_weeks = week_count_per_month[monthOfpayment]
 
 
-print("This is number of insurable weeks for this month", prsi_ins_weeks)
-
-#if i_date[3:4] == "01":
-  #  payslip.ins_weeks = week_count_per_month["01"]
-#elif i_date[3:4] == "02":
-   # payslip.ins_weeks = week_count_per_month["02"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 2020/6/16 #debug
-# 2010,66 #debug
 
 # -------------- end user data input validation -------------------------------------------------------
 
-print("\n\n now extraction \n\n")
+
+print("\n\n now extraction \n\n") # debugging
 
 
-#####################################
-# Process 1 -- data extraction module 
-#####################################
+#######################################################################################################
+# Data extraction module 
+#######################################################################################################
 
 
 
@@ -270,7 +219,7 @@ if payrollFileInput in os.listdir():
             #print(type(data))
             # check for double entry for one Employee
             if data[0] not in ppsCheck:
-                #print(data[0])
+                print(data[0])
                 ppsCheck.add(data[0])                
                 payrollValuesData.append(data)          
             payrollKeyData.append(payrollKeys)
@@ -290,9 +239,9 @@ else:
 
 
 #debug
-#for pd in payrollDataFile: 
-    #print((pd))
-#print("---------------------------------------")
+for pd in payrollDataFile: 
+    print((pd))
+print("---------------------------------------")
 
 
 #  extracting data from USC file
@@ -338,9 +287,9 @@ else:
 
 
 
-###############################
+###############################################################################################
 #  Process 2 -- calculation module
-###############################
+###############################################################################################
 
 
 
@@ -348,11 +297,11 @@ else:
 
 print(" in caluclation ") # debugging
 
-personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"", "prsi_class":""}
-monthlyCalculations = {"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"",  "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
-uscMonthlyCalculations = { "date_of_payment":""}
-cumulativeCalculations = {"cum_gp_to_date":"", "cum_srcop":"", "cum_lwr_paye":"", "cum_higher_paye":"", "cumulative_usc":"", "cum_tax_credits":"", "cum_gross_tax":"", "cum_tax_due":""}
-uscCumulativeCalculations = {"gp_for_usc_this_period":"", "cum_gp_for_usc_to_date":"", "cum_usc_cut_off_point_1":"", "cum_usc_due_at_usc_rate_1":"", "cum_usc_cut_off_point_2":"", "cum_usc_due_at_usc_rate_2":"", "cum_usc_cut_off_point_3":"", "cum_usc_due_at_usc_rate_3":"", "cum_usc_due_at_usc_rate_4":""}         
+personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"","email":"", "prsi_class":""}
+monthlyCalculations = {} #{"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"",  "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
+uscMonthlyCalculations = {} #{ "date_of_payment":""}
+cumulativeCalculations = {} #{"cum_gp_to_date":"", "cum_srcop":"", "cum_lwr_paye":"", "cum_higher_paye":"", "cumulative_usc":"", "cum_tax_credits":"", "cum_gross_tax":"", "cum_tax_due":""}
+uscCumulativeCalculations = {} #{"gp_for_usc_this_period":"", "cum_gp_for_usc_to_date":"", "cum_usc_cut_off_point_1":"", "cum_usc_due_at_usc_rate_1":"", "cum_usc_cut_off_point_2":"", "cum_usc_due_at_usc_rate_2":"", "cum_usc_cut_off_point_3":"", "cum_usc_due_at_usc_rate_3":"", "cum_usc_due_at_usc_rate_4":""}         
 
 
 for pd,us in zip(payrollDataFile, uscDataFile):                
@@ -750,23 +699,8 @@ for num in range(len(payrollDataFile)):
     # validation function is called. This function calls the function that produces Payslip, Usc and Tdc cards
     valideteEmployee(monthOfpayment, employeeName, payslips[num], uscCards[num], tdcCards[num])            
 
+       
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
-         
-           
-'''
 
 # update payroll file
     
@@ -792,7 +726,7 @@ employeePayrollDate.close()
 #<<<<<<< HEAD
  # 2010/6/16           
 #=======
-
+'''
 
 print(" ------ Payroll file -------")           
 for pd in payrollDataFile:    
