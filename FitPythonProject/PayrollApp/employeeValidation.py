@@ -72,7 +72,7 @@ tdcCards = []
 
 # file path for application and files used for processing
 destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
-payrollFileInput = "payrollFile2.txt"
+payrollFileInput = "payrollFile1.txt"
 uscDataFileInpute = "uscData.txt"
 
 
@@ -110,7 +110,15 @@ while not isDateValid:
 d = datetime.datetime.strptime(dateOfPayment, '%Y/%m/%d')
 monthOfpayment = d.month
 monthName = calendar.month_name[monthOfpayment]
-print(monthName)
+
+#print(monthName) # debugging
+
+# day of payment is validated. If it is not working day previous working day is picked as day of payment
+
+
+# is sunday of sat
+
+
 
 
 

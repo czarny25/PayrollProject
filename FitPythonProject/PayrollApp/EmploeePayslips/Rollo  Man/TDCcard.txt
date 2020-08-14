@@ -6,14 +6,14 @@
 
                                                                        Tax Rate 1 20%        Tax Rate 2 40%  
 
-                                                                       Tax Year 2010 
+                                                                       Tax Year 2021 
 
  Employer Name         Johnny Consulting Services Ltd                  Employer Number Er. No. 9237821S  
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      |  Date of |   Gross  | Cumulative | Cumulative | Cumulative | Cumulative |Cumulative|Cumulative|Cumulative|Tax Deducted|Tax Refunded|USC Deducted|USC Refunded|  PRSI  | PRSI   | Total  |   Net    |
- Month|  Payment | Pay this | Gross Pay  |   Cut-Off  | Tax Due at | Tax Due at |  Gross   |Tax Credit|    Tax   |this Period | this period| this Period| this Period|Employer|Employee|  PRSI  |   Pay    |
-      |  Payment |  period  |  to Date   |    Point   | Tax Rate 1 | Tax Rate 2 |   Tax    |  Monthly |          |            |            |            |            |  Share |  Share |        |          |
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-   6  |10/04/2016| 4083.33  | 4166.67    | 17650.00   | 588.33     | 456.67     | 1065.01  | 275.00   | 770.00   | 770.00     | 0.00       | 128.35     | 0.00       | 456.25 | 166.67 | 622.92 | 3018.32  |
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      |  Date of |   Gross  | Cumulative | Cumulative | Cumulative | Cumulative |Cumulative|Cumulative|Cumulative|Tax Deducted|Tax Refunded|USC Deducted|USC Refunded|Insurable| PRSI  | PRSI   | Total  |   Net    |
+ Month|  Payment | Pay this | Gross Pay  |   Cut-Off  | Tax Due at | Tax Due at |  Gross   |Tax Credit|    Tax   |this Period | this period| this Period| this Period|  weeks  | class |Employee|  PRSI  |   Pay    |
+      |  Payment |  period  |  to Date   |    Point   | Tax Rate 1 | Tax Rate 2 |   Tax    |  Monthly |          |            |            |            |            |         |       |  Share |        |          |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   3  |2021-03-02| 4083.33  | 4166.67    | 8825.00    | 588.33     | 456.67     | 1065.01  | 275.00   | 770.00   | 770.00     | 0.00       | 128.35     | 0.00       | 13      | A0    | 166.67 | 622.92 | 3018.32  |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

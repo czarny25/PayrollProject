@@ -8,10 +8,11 @@ from fpdf import FPDF
 import datetime
 import calendar
 import os
+from workalendar.europe import Ireland
+from builtins import str
 
 
-
-# global variables 
+# ------------------ global variables 
 
 # set of data structures for payroll file processing 
 payrollKeys = ["pps", "fname", "sname", "mname", "dob","email",
@@ -63,61 +64,171 @@ tdcValuesDataDict = {}
 tdcCards = []
 
 
+# ------------------  end global variables
+
+
+
+
+
 # file path for application and files used for processing
 destination = os.getcwd() + "\\EmploeePayslips\\"   #+ employeeName+"\\"
 payrollFileInput = "payrollFile1.txt"
 uscDataFileInpute = "uscData.txt"
 
 
+
+# -------------- Welcome information
+
+print("Welcome \nThis is Automated Payroll Application ")
+
+
+
+
+# -------------- user data input validation -------------------------------------------------------
+
 # input date of payment from administrator 
 print("Provide data of payment in following format: Year, Month, Day")
-dateOfPayment = input();
+inputDateOfPayment = input();
 monthOfpayment = ""
 
-
+# debug data
+#2008-45-12
+#125-12-12
+#2589-12-45
+# 2021-3-2
+# 2020-8-2
+# 2020-9-2
+# 2020-3-2
+#1998-2-23
 
 # date validation for correct format -------------------------------------------------------------
-isDateValid = bool(False)
+isDateValid = False
 
 def validateDataInput(date, isDateV):
     print("This is your date ", date) # debug       
     try:
-        datetime.datetime.strptime(date, '%Y/%m/%d')
+        datetime.datetime.strptime(date, '%Y-%m-%d')
         isDateV = bool(True)
     except ValueError:
-        print("Incorrect data format, should be YYYY/MM/DD")
+        print("Incorrect data format, should be YYYY-MM-DD")
         print("Please try again ")
     return isDateV
 
-isDateValid = validateDataInput(dateOfPayment, isDateValid)
-print(isDateValid)
+isDateValid = validateDataInput(inputDateOfPayment, isDateValid)
 
 while not isDateValid:   
-    dateOfPayment = input();
-    isDateValid = validateDataInput(dateOfPayment, isDateValid)  
-
-
+    inputDateOfPayment = input();
+    isDateValid = validateDataInput(inputDateOfPayment, isDateValid)  
 
 
 # month number is extracted from data 
-d = datetime.datetime.strptime(dateOfPayment, '%Y/%m/%d')
+d = datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')
+paydate = datetime.date(d.year,d.month,d.day)
+
 monthOfpayment = d.month
-#print("monthOfpayment ", monthOfpayment)
 monthName = calendar.month_name[monthOfpayment]
-print(monthName)
-
-
-
-# number of working weeks for given month is calculated
-# set array for weeks in the 
-
-
-# exact data of payment is calculated 
-# according to specification payment must occur on 10th of each month or on the next working day
 
 
 
 
+#--------- past date validation -----------------
+
+isPastDate = False
+
+def pastDateCheck(date, isPD):
+    if (datetime.date.today()) < (datetime.datetime.strptime(date, '%Y-%m-%d').date()):
+        isPD = True
+        print("this is not past date")
+    return isPD
+
+isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
+'''
+while not isPastDate:
+    print("This is past date. Payroll can only be processed for future date")   
+    inputDateOfPayment = input();
+    isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
+
+print(isPastDate)
+'''
+
+#-------- tax year validation --------------------
+
+isCurrentTaxYear = False
+
+def currentTaxYearCheck(date, isYearV):
+    if (datetime.date.today()).year == (datetime.datetime.strptime(date, '%Y-%m-%d')).year:
+        isYearV = True
+        #print(  (datetime.date.today()).year, " and "(datetime.datetime.strptime(date, '%Y-%m-%d')).year)
+        print("this is current year")
+    return isYearV
+
+isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
+
+'''
+while not isCurrentTaxYear:
+    print("This is not current tax year. Payroll can only be processed for current tax year")   
+    inputDateOfPayment = input();
+    isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
+
+
+print((datetime.date.today()).year == (datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')).year)
+'''
+
+while not (isCurrentTaxYear and isPastDate):
+    print("This is not current tax year. Make sure Payroll can only be processed for current tax year")   
+    inputDateOfPayment = input();
+    isCurrentTaxYear = currentTaxYearCheck(inputDateOfPayment, isCurrentTaxYear)
+    isPastDate = pastDateCheck(inputDateOfPayment, isPastDate)
+
+print((datetime.date.today()).year == (datetime.datetime.strptime(inputDateOfPayment, '%Y-%m-%d')).year)
+
+
+print(isCurrentTaxYear)
+
+
+
+
+
+# Function for check if day is not bank holiday
+def isBankHolidayFunc(date):   
+    for d in Ireland().holidays(date.year):
+        if d[0] == date: return True           
+    return False
+
+# Function for check if day is not weekend day 
+def isWeekendFunc(date):    
+    if date.weekday() < 5:
+        return False 
+    else:
+        return True
+
+# Function for generating previous working day
+def previousWorkingDay(date):
+    return date - datetime.timedelta(max(1, (date.weekday() + 6) % 7 - 3))
+
+# Payment date is validated and changed for previous available day if necessary 
+while isBankHolidayFunc(paydate) or isWeekendFunc(paydate):
+    #print(paydate, "is not bussines day") 
+    paydate = previousWorkingDay(paydate)
+#newPaydate = paydate
+paydate = str(paydate)
+print("This is not bussines day\nPaymant must be processed before this date \nPayment will be processed on -", paydate)
+
+
+
+
+# Here prsi_ins_weeks for given month is calculated
+week_count_per_month = {1:5, 2:9, 3:13, 4:18, 5:22, 6:26, 7:31, 8:35, 9:39, 10:44, 11:48, 12:52}
+
+prsi_ins_weeks = week_count_per_month[monthOfpayment]
+
+
+print("This is number of insurable weeks for this month", prsi_ins_weeks)
+
+#if i_date[3:4] == "01":
+  #  payslip.ins_weeks = week_count_per_month["01"]
+#elif i_date[3:4] == "02":
+   # payslip.ins_weeks = week_count_per_month["02"]
 
 
 
@@ -129,12 +240,16 @@ print(monthName)
 
 
 
-# 2010/6/16 #debug
+
+
+
+
+# 2020/6/16 #debug
 # 2010,66 #debug
 
-# end of data validation -------------------------------------------------------
+# -------------- end user data input validation -------------------------------------------------------
 
-print(" now extraction ")
+print("\n\n now extraction \n\n")
 
 
 #####################################
@@ -175,9 +290,9 @@ else:
 
 
 #debug
-for pd in payrollDataFile: 
-    print((pd))
-print("---------------------------------------")
+#for pd in payrollDataFile: 
+    #print((pd))
+#print("---------------------------------------")
 
 
 #  extracting data from USC file
@@ -231,7 +346,7 @@ else:
 
 #def calculateAllValues():
 
-print(" in caluclation ")
+print(" in caluclation ") # debugging
 
 personalData = {"pps":"", "fname":"", "sname":"", "mname":"", "dob":"", "prsi_class":""}
 monthlyCalculations = {"mo_gross_pay_less_super":"", "date_of_payment":"", "prsi_ins_weeks":"", "prsi_ee":"", "prsi_er":"",  "usc_ded_this_period":"", "usc_ref_this_period":""} # , "mo_net_pay":""
@@ -255,8 +370,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     uscValuesDataDict.update(personalData)    
     
     payrollValuesDataDict.update(personalData)
-    
-    #payrollValuesDataDict.pop("prsi_class")
+       
     payrollValuesDataDict["al_salary"] = (pd["al_salary"])
     payrollValuesDataDict["al_srcop"] = (pd["al_srcop"])
     payrollValuesDataDict["al_paye_credits"] = (pd["al_paye_credits"])
@@ -267,15 +381,14 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     tdcValuesDataDict["total_Cut-Off_Point"] = "20%"
     tdcValuesDataDict["tax_Rate_1"] = "20%"
     tdcValuesDataDict["tax_Rate_2"] = "40%"
-    tdcValuesDataDict["taxYear"] = dateOfPayment[:4]
+    tdcValuesDataDict["taxYear"] = str(paydate[:4])
     tdcValuesDataDict["employerName"] = "Johnny Consulting Services Ltd"
     tdcValuesDataDict["employerNumber"] = "Er. No. 9237821S"
      
          
             
     annualSalary = float(pd["al_salary"])
-    pension = (annualSalary * 0.02)/12
-    #print(pension)
+    pension = (annualSalary * 0.02)/12    
     monthlySalary = (annualSalary/12)
     #print(annualSalary , " -- ",  monthlySalary)     
     
@@ -283,13 +396,13 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     
     
     monthlyCalculations["mo_gross_pay_less_super"] = "%.2f" %(monthlySalaryLessPension)
-    monthlyCalculations["date_of_payment"] = "10/04/2016"    #  fix date
+    monthlyCalculations["date_of_payment"] = paydate
     monthlyCalculations["prsi_ins_weeks"] = "%.2f" %(5)    
     uscMonthlyCalculations["date_of_payment"] = "10/34/1656"
     tdcValuesDataDict["cumulative_Cut-Off_Point"] = "%.2f" %(monthlySalaryLessPension)
     
      
-    
+    #---------- Pay Tax calculation
         
     annualScrop = float(pd["al_srcop"])
     annualTaxCredit = float(pd["al_paye_credits"])
@@ -314,9 +427,9 @@ for pd,us in zip(payrollDataFile, uscDataFile):
         
         totalMonthlyPayeTax = twentyPercent + fortyPercent - monthlyTaxCredit
         
-    print(totalMonthlyPayeTax)
+    #print(totalMonthlyPayeTax)
 
-    # PRSI calculation   
+    #------------ PRSI calculation   
  
     prsiEE = monthlySalary * 0.04    
     prsiER = monthlySalary * 0.1095    
@@ -344,7 +457,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     if annualSalary >= (70044): uscRate4 = (annualSalary/12) * 0.08
         
     totalMonthlyUSC = uscRate1 + uscRate2 + uscRate3 + uscRate4    
-    print(uscRate1, "  " , uscRate2, "  " ,  uscRate3 , "  " ,  uscRate4)
+    #print(uscRate1, "  " , uscRate2, "  " ,  uscRate3 , "  " ,  uscRate4)
     
     monthlyCalculations["usc_ded_this_period"] = "%.2f" %(totalMonthlyUSC)
     uscMonthlyCalculations["usc_ded_this_period"] = "%.2f" %(totalMonthlyUSC)
@@ -357,7 +470,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
         uscMonthlyCalculations["usc_ref_this_period"] = "%.2f" %(totalMonthlyUSC)
     
     totalDedactions = totalMonthlyPayeTax +  prsiEE  + totalMonthlyUSC 
-    print(totalDedactions)
+    #print(totalDedactions)
     
     netMonthlySalary = monthlySalaryLessPension - totalDedactions    
     monthlyCalculations["mo_net_pay"] = "%.2f" %(netMonthlySalary)
@@ -417,21 +530,20 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     
     cum_usc_due_at_usc_rate_4 = float(us["cum_usc_due_at_usc_rate_4"]) 
     uscCumulativeCalculations["cum_usc_due_at_usc_rate_4"] = ("%.2f" % (cum_usc_due_at_usc_rate_4 + totalDedactions))
-    
-    
-    
+            
     
     payslipsValuesDataDict.update(cumulativeCalculations)
     payslipsValuesDataDict.update(monthlyCalculations)
     payslipsValuesDataDict["pension"] = "%.2f" %(pension)
     payslips.append(payslipsValuesDataDict)
     payslipsValuesDataDict = {}
-    
-    
+        
     
     tdcValuesDataDict.update(cumulativeCalculations)  
     tdcValuesDataDict["cumulative_Cut-Off_Point"] = "%.2f" %(monthlyScrop * monthOfpayment)  
     tdcValuesDataDict.update(monthlyCalculations)
+    tdcValuesDataDict["prsi_class"] = (pd["prsi_class"])
+    tdcValuesDataDict["prsi_ins_weeks"] = str(prsi_ins_weeks)
     tdcCards.append(tdcValuesDataDict)
     tdcValuesDataDict = {}  
     
@@ -442,9 +554,8 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     uscValuesDataDict = {}
         
     payrollValuesDataDict["prsi_class"] = (pd["prsi_class"])
-    payrollValuesDataDict.update(cumulativeCalculations)
+    payrollValuesDataDict.update(cumulativeCalculations)    
     
-    #print("to jest ", payrollValuesDataDict)
     payrollOutputsData.append(payrollValuesDataDict)
     payrollValuesDataDict = {}
 
@@ -462,12 +573,10 @@ for pd,us in zip(payrollDataFile, uscDataFile):
 
 
 
-print(" now payslip creation ")
+print(" now payslip creation ") # debugging
 
 
 
-
-#empName = " "
 
 # class for Pdf payslip template ---------------------------------------------------------------------
 class payslipPDF(FPDF):
@@ -488,7 +597,7 @@ def createPayslip(empName, month, payslip):
     
          
     col1 = ['{:60s} {:12s}'.format("PPS Number", payslip['pps']),
-            '{:67s} {:12s}'.format("Date", dateOfPayment),
+            '{:67s} {:12s}'.format("Date", paydate),
             '{:66s} {:12s}'.format("Gross Salary", payslip['mo_gross_pay_less_super']),
             '{:60s} {:12s}'.format("", ""),
             '{:60s} {:12s}'.format("", ""),
@@ -548,18 +657,18 @@ def createTDCCardFile(empName, month, tdcCard, tdcCardFile):
     employeeTDCRecord = employeeTDCRecord + "                                                             Tax Rate 1 20%        Tax Rate 2 40%  \n\n  "
     employeeTDCRecord = employeeTDCRecord + "                                                                     Tax Year "  + tdcCard['taxYear'] + " \n\n"          
     employeeTDCRecord = employeeTDCRecord + " Employer Name         "  + tdcCard['employerName'] + "                  Employer Number "  + tdcCard['employerNumber'] + "  \n\n"  
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-    employeeTDCRecord = employeeTDCRecord + "      |  Date of |   Gross  | Cumulative | Cumulative | Cumulative | Cumulative |Cumulative|Cumulative|Cumulative|Tax Deducted|Tax Refunded|USC Deducted|USC Refunded|  PRSI  | PRSI   | Total  |   Net    |\n" 
-    employeeTDCRecord = employeeTDCRecord + " Month|  Payment | Pay this | Gross Pay  |   Cut-Off  | Tax Due at | Tax Due at |  Gross   |Tax Credit|    Tax   |this Period | this period| this Period| this Period|Employer|Employee|  PRSI  |   Pay    |\n" 
-    employeeTDCRecord = employeeTDCRecord + "      |  Payment |  period  |  to Date   |    Point   | Tax Rate 1 | Tax Rate 2 |   Tax    |  Monthly |          |            |            |            |            |  Share |  Share |        |          |\n"
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+    employeeTDCRecord = employeeTDCRecord + "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+    employeeTDCRecord = employeeTDCRecord + "      |  Date of |   Gross  | Cumulative | Cumulative | Cumulative | Cumulative |Cumulative|Cumulative|Cumulative|Tax Deducted|Tax Refunded|USC Deducted|USC Refunded|Insurable| PRSI  | PRSI   | Total  |   Net    |\n" 
+    employeeTDCRecord = employeeTDCRecord + " Month|  Payment | Pay this | Gross Pay  |   Cut-Off  | Tax Due at | Tax Due at |  Gross   |Tax Credit|    Tax   |this Period | this period| this Period| this Period|  weeks  | class |Employee|  PRSI  |   Pay    |\n" 
+    employeeTDCRecord = employeeTDCRecord + "      |  Payment |  period  |  to Date   |    Point   | Tax Rate 1 | Tax Rate 2 |   Tax    |  Monthly |          |            |            |            |            |         |       |  Share |        |          |\n"
+    employeeTDCRecord = employeeTDCRecord + "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
     
     employeeTDCRecord = employeeTDCRecord + ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(tdcCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(tdcCard['mo_gross_pay_less_super'],'|')) #+ 
     employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['cum_gp_to_date'],'|')) + (' {:11s}{:s}'.format(tdcCard['cumulative_Cut-Off_Point'],'|'))  + (' {:11s}{:s}'.format(tdcCard['cum_lwr_paye'],'|')) + (' {:11s}{:s}'.format(tdcCard['cum_higher_paye'],'|')) 
     employeeTDCRecord = employeeTDCRecord + (' {:9s}{:s}'.format(tdcCard['cum_gross_tax'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_credits'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_due'],'|')) + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_deducted'],'|')) 
-    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_er'],'|'))  
-    employeeTDCRecord = employeeTDCRecord + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:8s}{:s}'.format(tdcCard['prsi_ins_weeks'],'|'))  
+    employeeTDCRecord = employeeTDCRecord + (' {:6s}{:s}'.format(tdcCard['prsi_class'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
+    employeeTDCRecord = employeeTDCRecord + "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
     # tdc card is written to file
     tdcCardFile.write(employeeTDCRecord)
@@ -574,9 +683,9 @@ def updateTDCCardFile(empName, month, tdcCard):
     employeeTDCRecord =  ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(tdcCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(tdcCard['mo_gross_pay_less_super'],'|')) #+ 
     employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['cum_gp_to_date'],'|')) + (' {:11s}{:s}'.format(tdcCard['cumulative_Cut-Off_Point'],'|'))  + (' {:11s}{:s}'.format(tdcCard['cum_lwr_paye'],'|')) + (' {:11s}{:s}'.format(tdcCard['cum_higher_paye'],'|')) 
     employeeTDCRecord = employeeTDCRecord + (' {:9s}{:s}'.format(tdcCard['cum_gross_tax'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_credits'],'|')) + (' {:9s}{:s}'.format(tdcCard['cum_tax_due'],'|')) + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_deducted'],'|')) 
-    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_er'],'|'))  
-    employeeTDCRecord = employeeTDCRecord + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
-    employeeTDCRecord = employeeTDCRecord + "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+    employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['total_tax_this_period_refund'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(tdcCard['usc_ref_this_period'],'|')) + (' {:8s}{:s}'.format(tdcCard['prsi_ins_weeks'],'|'))  
+    employeeTDCRecord = employeeTDCRecord + (' {:6s}{:s}'.format(tdcCard['prsi_class'],'|')) + (' {:7s}{:s}'.format(tdcCard['prsi_ee'],'|')) + (' {:7s}{:s}'.format(tdcCard['total_PRSI'],'|')) +  (' {:9s}{:s}'.format(tdcCard['mo_net_pay'],'|')) + "\n" 
+    employeeTDCRecord = employeeTDCRecord + "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
      
     tdcCardFile = open(destination + empName+"\\TDCcard.txt","a") 
@@ -591,20 +700,25 @@ def updateTDCCardFile(empName, month, tdcCard):
 # function for validating employees and creating file structure for them
 def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
     
+    previousPayslipNumber = monthN - 1
     if empName in os.listdir('EmploeePayslips/'):    
         if str(monthN) +'.pdf' in os.listdir("EmploeePayslips/" + empName + "/Payslips"):
-            #os.startfile(destination + empName+"\\Payslips\\" + str(monthName)+".pdf")
-            pass
+            print("Documenets for this period have been generated - Please check data files")
+        elif (str(previousPayslipNumber) +'.pdf' not in os.listdir("EmploeePayslips/" + empName + "/Payslips")) and (previousPayslipNumber > 1):
+            print("Error!!!\nMissing previous payslip for",empName, "\nPaymant cannot be processed util records are not verified\nPlease check record and run program again" )
+        
+        
+        
         else:
             
             print()
-            #createPayslip(empName, monthN, payslip)
+            createPayslip(empName, monthN, payslip)
             updateTDCCardFile(empName, monthN, tdcCard)
             #updateUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
             
     else:
         print(("New employee " + empName))
-        
+        print(("File directory will be created " + empName))
         # file structure for new employee is created
         os.mkdir(destination + empName+"\\")       
         os.mkdir(destination + empName+"\\Payslips")     
@@ -612,7 +726,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
         open(destination + empName+"\\UCDcard.txt","w+")
 
 
-        #createPayslip(empName, monthN, payslip)
+        createPayslip(empName, monthN, payslip)
         createTDCCardFile(empName, monthN, tdcCard, tdcCardFile)
         #createUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
 
@@ -625,7 +739,7 @@ def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
 
 
 
-# main process 
+# ------------  Here whole calculation starts - main process ----------------
 
 for num in range(len(payrollDataFile)):
     
@@ -634,7 +748,21 @@ for num in range(len(payrollDataFile)):
         
     
     # validation function is called. This function calls the function that produces Payslip, Usc and Tdc cards
-    valideteEmployee(monthName, employeeName, payslips[num], uscCards[num], tdcCards[num])            
+    valideteEmployee(monthOfpayment, employeeName, payslips[num], uscCards[num], tdcCards[num])            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
          
            
