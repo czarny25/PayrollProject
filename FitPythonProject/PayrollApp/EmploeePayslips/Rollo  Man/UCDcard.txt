@@ -1,0 +1,21 @@
+ Universal Social Charge (USC) Payroll Card 
+ ------------------ 
+ Employee Name         Rollo  Man                                     USC Cut-Off Point 1     12012                                    Initial PRSI Class A1
+
+ PPS Number            2131330K                                       USC Cut-Off Point 2     19874  
+
+                                                                      USC Cut-Off Point 3     70044  
+
+                                                                      Tax Year                2020 
+
+                                                                      USC Rate 1    0.5%    USC Rate 2    2%    USC Rate 3    4.5%    USC Rate 4   8%
+
+ Employer Name         ICTAP Resourcing Ltd.                          Employer Number         Er. No. 1234567Y  
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      |  Date of |   Gross  | Cumulative | Cumulative  |Cumulative USC| Cumulative |Cumulative USC| Cumulative|Cumulative USC|Cumulative USC|Cumulative|USC Deducted|USC Refunded|
+ Month|  Payment | Pay this | Gross Pay  | USC Cut-Off |  Due at USC  |USC Cut-Off |  Due at USC  |USC Cut-Off|  Due at USC  |  Due at USC  |    USC   | this Period| this Period|
+      |          |  period  |  to Date   |    Point 1  |    Rate 1    |   Point 2  |    Rate 2    |  Point 3  |    Rate 3    |    Rate 4    |          |            |            |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   9  |10/34/1656| 4083.33  | 137500.11  | 1065.01     | 1065.01      | 1065.01    | 1065.01      | 1065.01   | 1065.01      | 1065.01      | 6581.95  | 128.35     | 0.00       |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
