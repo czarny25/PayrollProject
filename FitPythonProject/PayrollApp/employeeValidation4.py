@@ -66,15 +66,7 @@ tdcCards = []
 
 # ------------------  end global variables
 
-# debugging dates 
-# 20102-6-16
-# 2010-26-6
-# 2010-6-56
 
-# 2010-6-16
-# 2021-6-16
-# 2020-9-10
-# 2020-09-10
 
 
 
@@ -339,15 +331,10 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     tdcValuesDataDict["tax_Rate_1"] = "20%"
     tdcValuesDataDict["tax_Rate_2"] = "40%"
     tdcValuesDataDict["taxYear"] = str(paydate[:4])
-    tdcValuesDataDict["employerName"] = "ICTAP Resourcing Ltd."
-    tdcValuesDataDict["employerNumber"] = "Er. No. 1234567Y"
+    tdcValuesDataDict["employerName"] = "Johnny Consulting Services Ltd"
+    tdcValuesDataDict["employerNumber"] = "Er. No. 9237821S"
      
-    uscValuesDataDict["taxYear"] = str(paydate[:4])
-    uscValuesDataDict["employerName"] = "ICTAP Resourcing Ltd."
-    uscValuesDataDict["employerNumber"] = "Er. No. 1234567Y"     
-    
-   
-    
+         
             
     annualSalary = float(pd["al_salary"])
     pension = (annualSalary * 0.02)/12    
@@ -362,7 +349,7 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     monthlyCalculations["prsi_ins_weeks"] = "%.2f" %(5)    
     uscMonthlyCalculations["date_of_payment"] = "10/34/1656"
     tdcValuesDataDict["cumulative_Cut-Off_Point"] = "%.2f" %(monthlySalaryLessPension)
-    uscValuesDataDict["mo_gross_pay_less_super"] = "%.2f" %(monthlySalaryLessPension)
+    
      
     #---------- Pay Tax calculation
         
@@ -441,8 +428,6 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     cum_gp_to_date = float(pd["cum_gp_to_date"]) 
     cumulativeCalculations["cum_gp_to_date"] = "%.2f" %(cum_gp_to_date + monthlySalary)
     
-    uscValuesDataDict["cum_gp_to_date"] = "%.2f" %(cum_gp_to_date + monthlySalary)
-    
     cum_srcop = float(pd["cum_srcop"]) 
     cumulativeCalculations["cum_srcop"] = "%.2f" %(cum_srcop + monthlyScrop)
     
@@ -467,14 +452,6 @@ for pd,us in zip(payrollDataFile, uscDataFile):
     
     uscMonthlyCalculations["cumulative_usc"] = "%.2f" %(cumulative_usc + totalMonthlyUSC)   
      
-    uscValuesDataDict["USC Cut-Off Point 1"] = "12012"
-    uscValuesDataDict["USC Cut-Off Point 2"] = "19874"
-    uscValuesDataDict["USC Cut-Off Point 3"] = "70044"
-    
-    uscValuesDataDict["USC Rate 1"] = "0.5%"
-    uscValuesDataDict["USC Rate 2"] = "2%"
-    uscValuesDataDict["USC Rate 3"] = "4.5%"
-    uscValuesDataDict["USC Rate 4"] = "8%"
     
     gp_for_usc_this_period = float(us["gp_for_usc_this_period"])
     uscCumulativeCalculations["gp_for_usc_this_period"] = "%.2f" %(gp_for_usc_this_period + monthlySalaryLessPension)
@@ -559,7 +536,7 @@ class payslipPDF(FPDF):
     def footer(self):
         self.set_y(-15)
         self.set_font('Arial', 'I', 6)
-        self.cell(0, 10, 'ICTAP Resourcing Ltd.  ( Er. No. 1234567Y  ) ', 0, 0, 'C')     
+        self.cell(0, 10, 'Johnny Consulting Services Ltd  ( Er. No. 9237821S  ) ', 0, 0, 'C')     
 
 
 
@@ -619,18 +596,10 @@ def createPayslip(empName, month, payslip):
     pdf.output(destination + empName+"\\Payslips\\" + str(month) + '.pdf', "F")
     
     
-
-
-
-
-
-
-
-
     
     
 # this function create tdc Card for new year or new employee 
-def createTDCCardFile(empName, tdcCard, tdcCardFile):    
+def createTDCCardFile(empName, month, tdcCard, tdcCardFile):    
        
     employeeTDCRecord = " Tax Deduction Card \n ------------------ \n Employee Name         " + empName + "                                      Total Tax Credit " + tdcCard['al_paye_credits'] +    "                       Initial PRSI Class " + tdcCard['prsi_class'] + "\n\n" 
     employeeTDCRecord = employeeTDCRecord + " PPS Number            " + tdcCard['pps'] +    "                                        Total Cut-Off Point " + tdcCard['al_paye_credits'] + "  \n\n          "
@@ -658,7 +627,7 @@ def createTDCCardFile(empName, tdcCard, tdcCardFile):
 
     
 # This function is for updating already existing tdc cards 
-def updateTDCCardFile(empName, tdcCard): 
+def updateTDCCardFile(empName, month, tdcCard): 
         
     employeeTDCRecord =  ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(tdcCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(tdcCard['mo_gross_pay_less_super'],'|')) #+ 
     employeeTDCRecord = employeeTDCRecord + (' {:11s}{:s}'.format(tdcCard['cum_gp_to_date'],'|')) + (' {:11s}{:s}'.format(tdcCard['cumulative_Cut-Off_Point'],'|'))  + (' {:11s}{:s}'.format(tdcCard['cum_lwr_paye'],'|')) + (' {:11s}{:s}'.format(tdcCard['cum_higher_paye'],'|')) 
@@ -677,74 +646,8 @@ def updateTDCCardFile(empName, tdcCard):
 
 
 
-# this function create tdc Card for new year or new employee 
-def createUSCCardFile(empName, uscCard, uscCardFile):    
-     
-     
-    print("this is usc card " , uscCard)
-     
-     
-       
-    employeeUSCRecord = " Universal Social Charge (USC) Payroll Card \n ------------------ \n Employee Name         " + empName + "                                     USC Cut-Off Point 1     " + uscCard["USC Cut-Off Point 1"] +    "                                    Initial PRSI Class " + uscCard["prsi_class"] + "\n\n" 
-    employeeUSCRecord = employeeUSCRecord + " PPS Number            2131330K                                       USC Cut-Off Point 2     " + uscCard["USC Cut-Off Point 2"] + "  \n\n " 
-    employeeUSCRecord = employeeUSCRecord + "                                                                     USC Cut-Off Point 3     " + uscCard["USC Cut-Off Point 3"] + "  \n\n"
-    employeeUSCRecord = employeeUSCRecord + "                                                                      Tax Year                "  + uscCard["taxYear"] + " \n\n" 
-    employeeUSCRecord = employeeUSCRecord + "                                                                      USC Rate 1    "  + uscCard["USC Rate 1"] + "    USC Rate 2    "  + uscCard["USC Rate 2"] + "    USC Rate 3    "  + uscCard["USC Rate 3"] + "    USC Rate 4   "  + uscCard["USC Rate 4"] + "\n\n"          
-    employeeUSCRecord = employeeUSCRecord + " Employer Name         "  + uscCard["employerName"] + "                          Employer Number         "  + uscCard["employerNumber"] + "  \n\n"  
-    employeeUSCRecord = employeeUSCRecord + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-    employeeUSCRecord = employeeUSCRecord + "      |  Date of |   Gross  | Cumulative | Cumulative  |Cumulative USC| Cumulative |Cumulative USC| Cumulative|Cumulative USC|Cumulative USC|Cumulative|USC Deducted|USC Refunded|\n" 
-    employeeUSCRecord = employeeUSCRecord + " Month|  Payment | Pay this | Gross Pay  | USC Cut-Off |  Due at USC  |USC Cut-Off |  Due at USC  |USC Cut-Off|  Due at USC  |  Due at USC  |    USC   | this Period| this Period|\n" 
-    employeeUSCRecord = employeeUSCRecord + "      |          |  period  |  to Date   |    Point 1  |    Rate 1    |   Point 2  |    Rate 2    |  Point 3  |    Rate 3    |    Rate 4    |          |            |            |\n"
-    employeeUSCRecord = employeeUSCRecord + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-    
-    employeeUSCRecord = employeeUSCRecord + ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(uscCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(uscCard['mo_gross_pay_less_super'],'|')) #+ 
-    employeeUSCRecord = employeeUSCRecord + (' {:11s}{:s}'.format(uscCard['cum_gp_to_date'],'|')) + (' {:12s}{:s}'.format(uscCard['cum_usc_cut_off_point_1'],'|'))  + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_1'],'|')) + (' {:11s}{:s}'.format(uscCard['cum_usc_cut_off_point_2'],'|')) 
-    employeeUSCRecord = employeeUSCRecord + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_2'],'|')) + (' {:10s}{:s}'.format(uscCard['cum_usc_cut_off_point_3'],'|')) + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_3'],'|')) + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_4'],'|')) 
-    employeeUSCRecord = employeeUSCRecord + (' {:9s}{:s}'.format(uscCard['cumulative_usc'],'|')) + (' {:11s}{:s}'.format(uscCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(uscCard['usc_ref_this_period'],'|')) + "\n" 
-    employeeUSCRecord = employeeUSCRecord + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-
-
-    #print(employeeUSCRecord)
-
-    # tdc card is written to file
-    uscCardFile.write(employeeUSCRecord)
-    uscCardFile.close()
-    # record cleared
-    employeeUSCRecord = ""
-    
-    
-    #print(employeeUSCRecord)
-    
-
-
-
-
-
-# This function is for updating already existing tdc cards 
-def updateUSCCardFile(empName, uscCard): 
-
-
-    employeeUSCRecord =  ('   {:3s}{:s}'.format(str(monthOfpayment),'|')) + ('{:10s}{:s}'.format(uscCard['date_of_payment'],'|')) + (' {:9s}{:s}'.format(uscCard['mo_gross_pay_less_super'],'|')) #+ 
-    employeeUSCRecord = employeeUSCRecord + (' {:11s}{:s}'.format(uscCard['cum_gp_to_date'],'|')) + (' {:12s}{:s}'.format(uscCard['cum_usc_cut_off_point_1'],'|'))  + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_1'],'|')) + (' {:11s}{:s}'.format(uscCard['cum_usc_cut_off_point_2'],'|')) 
-    employeeUSCRecord = employeeUSCRecord + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_2'],'|')) + (' {:10s}{:s}'.format(uscCard['cum_usc_cut_off_point_3'],'|')) + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_3'],'|')) + (' {:13s}{:s}'.format(uscCard['cum_usc_due_at_usc_rate_4'],'|')) 
-    employeeUSCRecord = employeeUSCRecord + (' {:9s}{:s}'.format(uscCard['cumulative_usc'],'|')) + (' {:11s}{:s}'.format(uscCard['usc_ded_this_period'],'|')) + (' {:11s}{:s}'.format(uscCard['usc_ref_this_period'],'|')) + "\n" 
-    employeeUSCRecord = employeeUSCRecord + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
-
-
-     
-    uscCardFile = open(destination + empName+"\\UCDcard.txt","a") 
-    uscCardFile.write(employeeUSCRecord)
-    uscCardFile.close()
-
-
-
-
-
-
-
-
 # function for validating employees and creating file structure for them
-def valideteEmployee(monthN, empName, payslip, uscCard, tdcCard):
+def valideteEmployee(monthN, empName, payslip, ucdCard, tdcCard):
     
     previousPayslipNumber = monthN - 1
     if empName in os.listdir('EmploeePayslips/'):    
@@ -769,15 +672,15 @@ def valideteEmployee(monthN, empName, payslip, uscCard, tdcCard):
         os.mkdir(destination + empName+"\\")       
         os.mkdir(destination + empName+"\\Payslips")     
         tdcCardFile = open(destination + empName+"\\TDCcard.txt","w")    
-        uscCardFile = open(destination + empName+"\\UCDcard.txt","w")
+        open(destination + empName+"\\UCDcard.txt","w+")
 
 
         createPayslip(empName, monthN, payslip)
-        createTDCCardFile(empName, tdcCard, tdcCardFile)
-        createUSCCardFile(empName, uscCard, uscCardFile)
+        createTDCCardFile(empName, monthN, tdcCard, tdcCardFile)
+        #createUCDCardFile(empName, monthN, tdcCard, ucdCardFile)
 
 
-        
+
 
 
 
@@ -819,18 +722,10 @@ for emp in payrollOutputsData:
     employeeRecord = ""
 employeePayrollDate.close()
 
-
-
-
-
-
-
-
-
-
-
-
-
+            
+#<<<<<<< HEAD
+ # 2010/6/16           
+#=======
 '''
 
 print(" ------ Payroll file -------")           
